@@ -35,7 +35,10 @@ def pingCOWIN(date,district_id):
     """
     url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id={district_id}&date={date}".format(district_id = district_id, date = date)
     response = requests.get(url)
-    return json.loads(response.text)
+    if(response.ok):
+        return json.loads(response.text)
+    else:
+        return {}
 
 def checkAvailability(payload):
     """
@@ -89,10 +92,12 @@ if __name__=="__main__":
             print("Counter now! "+str(counter))
         date = getDate()
         data1 = pingCOWIN(date,D_ID)
+        if(not bool(data1)):
+            print("Unexpected response from cowin")
         counter+=1
         print("API Calls: "+str(counter-1))
         available, unavailable = checkAvailability(data1)
-        if (len(available)>0):
+        if (available):
             headers = {'Content-Type': 'application/json',}
             data = {"value1": "Slot Available: "+available}
             data = json.dumps(data)
