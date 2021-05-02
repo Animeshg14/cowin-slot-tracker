@@ -1,1 +1,1 @@
-web: python covin_slot_tracker.py
+worker: python covin_slot_tracker.py
