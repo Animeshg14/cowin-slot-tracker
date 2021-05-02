@@ -1,9 +1,7 @@
-#!/usr/bin/env python3
-import sys
-import datetime,time
+import os
+import sys,time
+import datetime
 import requests,json
-from twilio.rest import Client
-
 def getDate():
     """
     Function to get the current date
@@ -66,7 +64,7 @@ def checkAvailability(payload):
             for i in range(0,length):
                 sessions_len = len(payload['centers'][i]['sessions'])
                 for j in range(0,sessions_len):
-                    if(payload['centers'][i]['sessions'][j]['available_capacity']>0):
+                    if(payload['centers'][i]['sessions'][j]['available_capacity']>0 and payload['centers'][i]['sessions'][j]['min_age_limit'] == 18):
                         available_centers.add(payload['centers'][i]['name'])
                     else:
                         unavailable_centers.add(payload['centers'][i]['name'])
@@ -76,23 +74,28 @@ def checkAvailability(payload):
     return available_centers_str,unavailable_centers_str
 
 
-
 if __name__=="__main__":
-    DISTRICT_ID = sys.argv[1]
-    SECRET_TOKEN = sys.argv[2]
-    ACCOUNT_SID = sys.argv[3]
-    TWILIO_PHONE_NUMBER = sys.argv[4]
-    CELL_PHONE_NUMBER = sys.argv[5]
-
-    client = Client(ACCOUNT_SID, SECRET_TOKEN)
+    D_ID = 230
+    my_secret = os.environ.get('IFTTT_TOKEN')
+    counter=0
     while(True):
+        if(counter==0):
+            headers = {'Content-Type': 'application/json',}
+            data = {"value1": "Cowin Slot Retriver Started!"}
+            data = json.dumps(data)
+            print(data)
+            response = requests.post('https://maker.ifttt.com/trigger/notify/with/key/{k}'.format(k=my_secret), headers=headers, data=data)
+            counter+=1
+            print("Counter now! "+str(counter))
         date = getDate()
-        data1 = pingCOWIN(date,DISTRICT_ID)
+        data1 = pingCOWIN(date,D_ID)
+        counter+=1
+        print("API Calls: "+str(counter-1))
         available, unavailable = checkAvailability(data1)
         if (len(available)>0):
-            msg_body = "Slots Available at "+available
-            print(msg_body)
-            client.messages.create(from_=TWILIO_PHONE_NUMBER,
-                       to=CELL_PHONE_NUMBER,
-                       body= msg_body)
-        time.sleep(900)
+            headers = {'Content-Type': 'application/json',}
+            data = {"value1": "Slot Available: "+available}
+            data = json.dumps(data)
+            print(data)
+            response = requests.post('https://maker.ifttt.com/trigger/notify/with/key/{k}'.format(k=my_secret), headers=headers, data=data)
+        time.sleep(300)
