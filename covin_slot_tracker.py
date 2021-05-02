@@ -33,11 +33,12 @@ def pingCOWIN(date,district_id):
     json
 
     """
-    url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id={district_id}&date={date}".format(district_id = district_id, date = date)
+    url = "https://api.demo.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id={district_id}&date={date}".format(district_id = district_id, date = date)
     response = requests.get(url)
     if(response.ok):
         return json.loads(response.text)
     else:
+        print(response.text)
         return {}
 
 def checkAvailability(payload):
