@@ -38,7 +38,7 @@ def pingCOWIN(date,district_id):
     if(response.ok):
         return json.loads(response.text)
     else:
-        print(response.text)
+        print("Unexpected response from cowin: "+response.text)
         return {}
 
 def checkAvailability(payload):
@@ -93,8 +93,8 @@ if __name__=="__main__":
             print("Counter now! "+str(counter))
         date = getDate()
         data1 = pingCOWIN(date,D_ID)
-        if(not bool(data1)):
-            print("Unexpected response from cowin")
+     
+
         counter+=1
         print("API Calls: "+str(counter-1))
         available, unavailable = checkAvailability(data1)
@@ -104,4 +104,4 @@ if __name__=="__main__":
             data = json.dumps(data)
             print(data)
             response = requests.post('https://maker.ifttt.com/trigger/notify/with/key/{k}'.format(k=my_secret), headers=headers, data=data)
-        time.sleep(300)
+        time.sleep(450)
