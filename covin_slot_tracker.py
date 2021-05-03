@@ -104,4 +104,4 @@ if __name__=="__main__":
             data = json.dumps(data)
             print(data)
             response = requests.post('https://maker.ifttt.com/trigger/notify/with/key/{k}'.format(k=my_secret), headers=headers, data=data)
-        time.sleep(450)
+        time.sleep(900)
