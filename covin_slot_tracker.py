@@ -38,7 +38,6 @@ def pingCOWIN(date,district_id):
     if(response.ok):
         return json.loads(response.text)
     else:
-        print(response.text)
         return {}
 
 def checkAvailability(payload):
